@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from tasks.forms import TaskForm, TaskModelForm
-from tasks.models import Employee, Task
+from tasks.models import Employee, Task, TaskDetail,Project
+from datetime import date
+from django.db.models import Q,Count,Max,Min,Avg
 
 # Create your views here.
 def manager_dashboard(request):
@@ -52,7 +54,36 @@ def create_task(request):
     return render(request, 'task_form.html', context)
 
 def view_task(request):
-    tasks = Task.objects.all()
-    task3=Task.objects.get(id=1) 
-    first_task = Task.objects.first()
-    return render(request ,"show_task.html",{"tasks":tasks,"task3":task3, "first_task": first_task})
+
+    # show the tasks which are completed
+    # tasks = Task.objects.filter(status="COMPLETED")
+
+    # show the tasks which are completed
+    # tasks = Task.objects.filter(due_date=date.today())
+
+    # tasks= TaskDetail.objects.exclude(priority="L")
+
+    # show the tasks which are contain c and pending
+    # tasks = Task.objects.filter(title__icontains="p",status="PENDING")
+
+    # tasks = Task.objects.filter(Q(status="PENDING")| Q(status="IN_PROGRESS"))
+
+    # tasks = Task.objects.all()
+    # task3=Task.objects.get(id=1) 
+    # first_task = Task.objects.first()
+
+    # select related 
+    # tasks = Task.objects.select_related('task').all()
+    # tasks = TaskDetail.objects.select_related('task').all()
+    # tasks = Task.objects.select_related('project').all()
+    # tasks = Project.objects.select_related('task_set').all()
+
+    # prefetch related 
+    # tasks= Project.objects.prefetch_related('task_set').all()
+
+    # tasks = Task.objects.prefetch_related('assigned_to').all()
+
+    # task_count= Task.objects.aggregate(num_task=Count('id'))
+    projects= Project.objects.annotate(num_task=Count('task')).order_by('num_task')
+
+    return render(request ,"show_task.html",{"projects":projects})

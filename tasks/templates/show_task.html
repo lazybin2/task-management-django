@@ -6,18 +6,28 @@
     <title>Document</title>
 </head>
 <body>
+
     <div>
-        <ul>
-            {% for task in tasks %}
-            <li>{{task}}</li>
-             {% endfor %}
-        </ul>
+        <p>{{task_count}}</p>
     </div>
-    <div>
+     <div>
+        <ol>
+            {% for project in projects %}
+            <li>
+               <p> {{project.name}} </p>
+               <p> {{project.num_task}} </p>
+               {% comment %} {% for emp in task.assigned_to.all %}
+                    <p> {{emp.name}} </p>
+                {% endfor %} {% endcomment %}
+            </li>
+             {% endfor %}
+        </ol>
+    </div> 
+    {% comment %} <div>
         {{task3}}
     </div>
     <div>
         {{first_task}}
-    </div>
+    </div>  {% endcomment %}
 </body>
 </html>

@@ -1,5 +1,5 @@
 from django import forms
-from tasks.models import Task
+from tasks.models import Task,TaskDetail
 
 # dajango form for creating a new task
 class TaskForm(forms.Form):
@@ -62,3 +62,13 @@ class TaskModelForm(StyledFormMixin,forms.ModelForm):
     def __init__(self,*args,**kwarg):
         super().__init__(*args,**kwarg)
         self.apply_styled_widgets()
+
+class TaskDetailModelForm(StyledFormMixin,forms.ModelForm):
+    class Meta:
+        model = TaskDetail
+        fields = ['priority','notes']
+
+    def __init__(self,*args,**kwarg):
+            super().__init__(*args,**kwarg)
+            self.apply_styled_widgets()
+    

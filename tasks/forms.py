@@ -15,6 +15,13 @@ class TaskForm(forms.Form):
         # You can customize the form fields here if needed
 
 class StyledFormMixin:
+
+    """ Mixing to apply style to form field"""
+
+    def __init__(self, *arg, **kwarg):
+        super().__init__(*arg, **kwarg)
+        self.apply_styled_widgets()
+
     default_classes="border-2 border-gray-300 w-full p-3 rounded-lg shadow-sm focus:outline-none focus:border-rose-300 focus:ring-rose-300"
     def apply_styled_widgets(self):
         for field_name,field in self.fields.items():
@@ -59,16 +66,9 @@ class TaskModelForm(StyledFormMixin,forms.ModelForm):
         #     'assigned_to': forms.CheckboxSelectMultiple(attrs={'class': "border-4 border-gray-300 w-full rounded-lg shadow-sm focus:border-rose-300"}),
         #     }
 
-    def __init__(self,*args,**kwarg):
-        super().__init__(*args,**kwarg)
-        self.apply_styled_widgets()
+    
 
 class TaskDetailModelForm(StyledFormMixin,forms.ModelForm):
     class Meta:
         model = TaskDetail
         fields = ['priority','notes']
-
-    def __init__(self,*args,**kwarg):
-            super().__init__(*args,**kwarg)
-            self.apply_styled_widgets()
-    

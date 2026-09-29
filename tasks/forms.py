@@ -58,16 +58,7 @@ class TaskModelForm(StyledFormMixin,forms.ModelForm):
             'due_date': forms.SelectDateWidget,
             'assigned_to': forms.CheckboxSelectMultiple
         }
-        # exclude = ['Project','is_completed', 'created_at', 'updated_at']  # Exclude fields that should not be edited directly
-        # widgets = {
-        #     'title': forms.TextInput(attrs={'class': "border-2 border-gray-300 w-full p-3 rounded-lg shadow-sm focus:outline-none focus:border-rose-300 focus:ring-rose-300", 'placeholder':"Enter task title"}),
-        #     'description':forms.Textarea(attrs={'class': "border-4 border-gray-300 w-full rounded-lg shadow-sm focus:outline-none focus:border-rose-300 focus:ring-rose-300",'rows':5, 'placeholder':"Describe the task"}),
-        #     'due_date': forms.SelectDateWidget(attrs={'class': "border-4 border-gray-300 rounded-lg shadow-sm focus:border-rose-300"}),
-        #     'assigned_to': forms.CheckboxSelectMultiple(attrs={'class': "border-4 border-gray-300 w-full rounded-lg shadow-sm focus:border-rose-300"}),
-        #     }
-
-    
-
+      
 class TaskDetailModelForm(StyledFormMixin,forms.ModelForm):
     class Meta:
         model = TaskDetail

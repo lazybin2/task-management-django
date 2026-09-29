@@ -3,6 +3,7 @@ import re
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from tasks.forms import StyledFormMixin
+from django.contrib.auth.forms import AuthenticationForm
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -15,18 +16,6 @@ class RegisterForm(UserCreationForm):
 
         for fieldname in ['username', 'password1', 'password2']:
             self.fields[fieldname].help_text = None
-
-# class RegisterForm(UserCreationForm):
-
-#     class Meta:
-#         model = User
-#         fields = ['username','first_name','last_name','password1','password2','email']
-
-#     def __init__(self, *args, **kwargs):
-#         super(UserCreationForm,self).__init__(*args, **kwargs)
-
-#         for fieldname in ['username','password1','password2']:
-#             self.fields['username'].help_text=None
 
 
 class CustomRegistrationForm(StyledFormMixin,forms.ModelForm):
@@ -73,35 +62,17 @@ class CustomRegistrationForm(StyledFormMixin,forms.ModelForm):
 
         return password1
 
-
-    # def clean_password1(self):
-    #     password1 = self.cleaned_data.get('password1')
-    #     errors = []
-
-    #     if len(password1) < 8:
-    #         errors.append('Password Must be 8 character')
-
-    #     if "abc" not in password1:
-    #         errors.append('Password must be at least 8 character long')
-
-    #     # if re.fullmatch(r'[A-Za-z0-9@#$%^&+=]',password1):
-    #     #     raise forms.ValidationError("Password must include Uppercase,lowercase,number & special character")
-
-    #     if errors:
-    #         raise forms.ValidationError(errors)
-
-    #     return password1
     
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
         confirm_password = cleaned_data.get('confirm_password')
 
-        # if password1 != confirm_password:
-        #     raise forms.ValidationError("Password do not match")
         if password1 and confirm_password and password1 != confirm_password:
             raise forms.ValidationError("Password do not match")
 
         
         return cleaned_data 
-        
+class LoginForm(StyledFormMixin, AuthenticationForm):
+    def __init__(self, *arg, **kwargs):
+        super().__init__(*arg, **kwargs)        

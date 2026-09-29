@@ -5,8 +5,18 @@ from tasks.models import Employee, Task, TaskDetail,Project
 from datetime import date
 from django.db.models import Q,Count,Max,Min,Avg
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 
 # Create your views here.
+
+def is_manager(user):
+    return user.groups.filter(name='Manager').exists()
+
+def is_employee(user):
+    return user.groups.filter(name='Manager').exists()
+
+
+@user_passes_test(is_manager, login_url='no-permission')
 def manager_dashboard(request):
 
     type=request.GET.get('type','all')
@@ -48,23 +58,16 @@ def manager_dashboard(request):
     contex = {
         'tasks':tasks,
         'counts':counts
-        # 'total_task': total_task,
-        # 'completed_task': completed_task,
-        # 'in_progress_task': in_progress_task,
-        # 'pending_task': pending_task
     }
     return render(request, 'dashboard/manager-dashboard.html',contex)
 
-def user_dashboard(request):
+@user_passes_test(is_employee)
+def employee_dashboard(request):
     return render(request, 'dashboard/user-dashboard.html')
 
-def test(request):
-    context = {
-        "names": ["John", "Jane", "Doe"],
-        "age": 30
-    }
-    return render(request, 'test.html', context)
 
+@login_required
+@permission_required("tasks.add_task", login_url='no-permission')
 def create_task(request):
     employees = Employee.objects.all()
     task_form = TaskModelForm() #for get
@@ -82,30 +85,13 @@ def create_task(request):
 
             messages.success(request,"Task Created Successfully")
             return redirect('create-task')
-
-            """"for dajango form data"""
-            # data = form.cleaned_data
-            # title = data.get('title')
-            # description = data.get('description')
-            # due_date = data.get('due_date')
-            # assigned_to_ids = data.get('assigned_to')
-
-            # task=Task.objects.create(
-            #     title=title,
-            #     description=description,
-            #     due_date=due_date
-            # )
-
-            # # Assign the selected employees to the task
-            # for emp_id in assigned_to_ids:
-            #     employee = Employee.objects.get(id=emp_id)
-            #     task.assigned_to.add(employee)
-
-            # return HttpResponse("Task created successfully!")
             
     context = {"task_form": task_form, "task_detail_form":task_detail_form}
     return render(request, 'task_form.html', context)
 
+
+@login_required
+@permission_required("tasks.change_task", login_url='no-permission')
 def update_task(request,id):
     task=Task.objects.get(id=id)
     task_form = TaskModelForm(instance=task) #for get
@@ -129,6 +115,9 @@ def update_task(request,id):
     context = {"task_form": task_form, "task_detail_form":task_detail_form}
     return render(request, 'task_form.html', context)
 
+
+@login_required
+@permission_required("tasks.delete_task", login_url='no-permission')
 def delete_task(request,id):
     if request.method == 'POST':
         task = Task.objects.get(id=id)
@@ -141,38 +130,9 @@ def delete_task(request,id):
 
     
 
-
+@login_required
+@permission_required("tasks.view_task", login_url='no-permission')
 def view_task(request):
 
-    # show the tasks which are completed
-    # tasks = Task.objects.filter(status="COMPLETED")
-
-    # show the tasks which are completed
-    # tasks = Task.objects.filter(due_date=date.today())
-
-    # tasks= TaskDetail.objects.exclude(priority="L")
-
-    # show the tasks which are contain c and pending
-    # tasks = Task.objects.filter(title__icontains="p",status="PENDING")
-
-    # tasks = Task.objects.filter(Q(status="PENDING")| Q(status="IN_PROGRESS"))
-
-    # tasks = Task.objects.all()
-    # task3=Task.objects.get(id=1) 
-    # first_task = Task.objects.first()
-
-    # select related 
-    # tasks = Task.objects.select_related('task').all()
-    # tasks = TaskDetail.objects.select_related('task').all()
-    # tasks = Task.objects.select_related('project').all()
-    # tasks = Project.objects.select_related('task_set').all()
-
-    # prefetch related 
-    # tasks= Project.objects.prefetch_related('task_set').all()
-
-    # tasks = Task.objects.prefetch_related('assigned_to').all()
-
-    # task_count= Task.objects.aggregate(num_task=Count('id'))
     projects= Project.objects.annotate(num_task=Count('task')).order_by('num_task')
-
     return render(request ,"show_task.html",{"projects":projects})

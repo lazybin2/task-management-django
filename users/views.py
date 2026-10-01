@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 # Create your views here.
 
 def is_admin(user):
-    return user.groups.filter(name='Admin').exists()
+    return user.is_superuser or user.groups.filter(name='Admin').exists()
 
 
 def sign_up(request):

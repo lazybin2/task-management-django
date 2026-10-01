@@ -1,13 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
-class Employee(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    # position = models.CharField(max_length=100)
-    # date_joined = models.DateField(auto_now_add=True)
-    def __str__(self):
-        return self.name
+# class Employee(models.Model):
+#     name = models.CharField(max_length=100)
+#     email = models.EmailField(unique=True)
+#     # position = models.CharField(max_length=100)
+#     # date_joined = models.DateField(auto_now_add=True)
+#     def __str__(self):
+#         return self.name
 
 class Task(models.Model):
     STATUS_CHOICES = [
@@ -16,12 +17,11 @@ class Task(models.Model):
         ('COMPLETED','Completed')
     ]
     project = models.ForeignKey('Project', on_delete=models.CASCADE, default=1)
-    assigned_to = models.ManyToManyField(Employee, related_name='tasks') 
+    assigned_to = models.ManyToManyField(User, related_name='tasks') 
     title = models.CharField(max_length=300)
     description = models.TextField()
     due_date = models.DateField()
     status = models.CharField(max_length=200,choices=STATUS_CHOICES,default='PENDING')
-    is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -36,15 +36,16 @@ class TaskDetail(models.Model):
         (HIGH, 'High'),
         (MEDIUM, 'Medium'),
         (LOW, 'Low'),
-        
+
     )
     task = models.OneToOneField(Task, on_delete=models.CASCADE, related_name='details')
+    asset = models.ImageField(upload_to='task_asset/',blank=True,null=True,default="tasks_asset/default.jpg")
     assigned_to = models.CharField(max_length=100)
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default=LOW)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Details form Task {self.task.title}"
+        return f"Details from Task {self.task.title}"
 
 class Project(models.Model):
     name = models.CharField(max_length=200)
